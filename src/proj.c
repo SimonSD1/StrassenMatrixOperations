@@ -1,12 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
-typedef struct matrix
-{
-    double **coefs;
-    int columns;
-    int rows;
-} matrix;
+#include "projet.h"
 
 void printMatrix(matrix A)
 {
@@ -50,6 +44,34 @@ matrix creeMatrix(int rows, int columns)
     return m;
 }
 
+
+void remplirMatrixManuel(matrix A) {
+    for(int i=0; i<A.rows; i++) {
+        for(int j=0; j<A.columns; j++) {
+            printf("[%d][%d] = ", i,j);
+            scanf("%lf", &A.coefs[i][j]);
+        }
+    }
+}
+
+
+void copyMatrix(matrix A, matrix copy) {
+    for(int i=0; i<A.rows; i++) {
+        for(int j=0; j<A.columns; j++) {
+            copy.coefs[i][j] = A.coefs[i][j];
+        }
+    }
+}
+
+
+void identity(matrix A) {
+    for(int i=0; i<A.rows; i++) {
+        for(int j=0; j<A.columns; j++)
+            A.coefs[i][j] = i==j;
+    }
+}
+
+
 void naiveMultMat(matrix A, matrix B, matrix result)
 {
     for (int i = 0; i < A.rows; i++)
@@ -66,13 +88,28 @@ void naiveMultMat(matrix A, matrix B, matrix result)
 }
 
 void strassen(matrix A, matrix B, matrix C){
-    
+    return;
 }
 
 
-
-int main(int argc, char const *argv[])
-{
-    
-    return 0;
+void LU(matrix A, matrix L, matrix U) {
+    //On initialise L à identity
+    identity(L);
+    //On initialise U à A
+    copyMatrix(A, U);
+    for(int i=0; i<U.rows; i++) {
+        //Si A a un pivot nul
+        if (U.coefs[i][i]==0) {
+            printf("LU factorisation is impossible : A has a pivot 0\n");
+            return;
+        }
+        for(int j=i+1; j<U.rows; j++) {   //ligne par ligne
+            double coeff = U.coefs[j][i];  //coefficient correspondant à la valeur sous le pivot
+            for(int k=i; k<U.columns; k++) {     //colonne par colonne
+                U.coefs[j][k] -= coeff/U.coefs[i][i]*U.coefs[i][k];
+            }
+            //Affectation de coeff/A[i][i] à L
+            L.coefs[j][i] = coeff/U.coefs[i][i];
+        }
+    }
 }
