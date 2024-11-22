@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+<<<<<<< HEAD
 #include <time.h>
 
 typedef struct matrix
@@ -11,6 +12,9 @@ typedef struct matrix
     int columns;
     int rows;
 } matrix;
+=======
+#include "projet.h"
+>>>>>>> 2fa9ff360ada30fcb4f509e69622ec1b2c66dc66
 
 void printMatrix(matrix A)
 {
@@ -46,7 +50,39 @@ matrix *creeMatrix(int rows, int columns)
     return m;
 }
 
+<<<<<<< HEAD
 matrix *naiveMultMat(matrix *A, matrix *B)
+=======
+
+void remplirMatrixManuel(matrix A) {
+    for(int i=0; i<A.rows; i++) {
+        for(int j=0; j<A.columns; j++) {
+            printf("[%d][%d] = ", i,j);
+            scanf("%lf", &A.coefs[i][j]);
+        }
+    }
+}
+
+
+void copyMatrix(matrix A, matrix copy) {
+    for(int i=0; i<A.rows; i++) {
+        for(int j=0; j<A.columns; j++) {
+            copy.coefs[i][j] = A.coefs[i][j];
+        }
+    }
+}
+
+
+void identity(matrix A) {
+    for(int i=0; i<A.rows; i++) {
+        for(int j=0; j<A.columns; j++)
+            A.coefs[i][j] = i==j;
+    }
+}
+
+
+void naiveMultMat(matrix A, matrix B, matrix result)
+>>>>>>> 2fa9ff360ada30fcb4f509e69622ec1b2c66dc66
 {
     matrix *result = creeMatrix(A->rows, B->columns);
     for (int i = 0; i < A->rows; i++)
@@ -198,6 +234,7 @@ void copyMatrix(matrix *A, matrix *B)
     }
 }
 
+<<<<<<< HEAD
 void LU(matrix *A, matrix *L, matrix *U)
 {
     // On initialise L à identity
@@ -223,6 +260,10 @@ void LU(matrix *A, matrix *L, matrix *U)
             L->coefs[j][i] = coeff / U->coefs[i][i];
         }
     }
+=======
+void strassen(matrix A, matrix B, matrix C){
+    return;
+>>>>>>> 2fa9ff360ada30fcb4f509e69622ec1b2c66dc66
 }
 
 // si limite = 2 comme dans un cas theorique, prend plus de temps que naif
@@ -233,6 +274,7 @@ matrix *strassen(matrix *A, matrix *B, int limite)
         return naiveMultMat(A, B);
     }
 
+<<<<<<< HEAD
     int size = A->rows;
     int halfSize = size / 2;
 
@@ -335,4 +377,26 @@ int main(int argc, char const *argv[])
     //freeMatrix(*result_strassen);
 
     return 0;
+=======
+void LU(matrix A, matrix L, matrix U) {
+    //On initialise L à identity
+    identity(L);
+    //On initialise U à A
+    copyMatrix(A, U);
+    for(int i=0; i<U.rows; i++) {
+        //Si A a un pivot nul
+        if (U.coefs[i][i]==0) {
+            printf("LU factorisation is impossible : A has a pivot 0\n");
+            return;
+        }
+        for(int j=i+1; j<U.rows; j++) {   //ligne par ligne
+            double coeff = U.coefs[j][i];  //coefficient correspondant à la valeur sous le pivot
+            for(int k=i; k<U.columns; k++) {     //colonne par colonne
+                U.coefs[j][k] -= coeff/U.coefs[i][i]*U.coefs[i][k];
+            }
+            //Affectation de coeff/A[i][i] à L
+            L.coefs[j][i] = coeff/U.coefs[i][i];
+        }
+    }
+>>>>>>> 2fa9ff360ada30fcb4f509e69622ec1b2c66dc66
 }
