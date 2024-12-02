@@ -213,7 +213,7 @@ void LU(matrix *A, matrix *L, matrix *U)
             return;
         }
         for (int j = i + 1; j < U->rows; j++)
-        {                                 // ligne par ligne
+        {                                  // ligne par ligne
             double coeff = U->coefs[j][i]; // coefficient correspondant à la valeur sous le pivot
             for (int k = i; k < U->columns; k++)
             { // colonne par colonne
@@ -225,66 +225,100 @@ void LU(matrix *A, matrix *L, matrix *U)
     }
 }
 
-// si limite = 2 comme dans un cas theorique, prend plus de temps que naif
-matrix *strassen(matrix *A, matrix *B, int limite)
-{
-    if (A->rows <= limite || A->columns <= limite || B->rows <= limite || B->columns <= limite)
-    {
+int nextPowerOfTwo(int n) {
+    int power = 1;
+    while (power < n) {
+        power <<= 1;
+    }
+    return power;
+}
+
+matrix *ajusteMatrix(matrix *A) {
+    int newSize = nextPowerOfTwo(A->rows > A->columns ? A->rows : A->columns);
+    matrix *padded = creeMatrix(newSize, newSize);
+
+    for (int i = 0; i < A->rows; i++) {
+        for (int j = 0; j < A->columns; j++) {
+            padded->coefs[i][j] = A->coefs[i][j];
+        }
+    }
+
+    for (int i = A->rows; i < newSize; i++) {
+        for (int j = 0; j < newSize; j++) {
+            padded->coefs[i][j] = 0;
+        }
+    }
+    for (int i = 0; i < A->rows; i++) {
+        for (int j = A->columns; j < newSize; j++) {
+            padded->coefs[i][j] = 0;
+        }
+    }
+
+    return padded;
+}
+
+matrix *extractResult(matrix *paddedResult, int originalRows, int originalColumns) {
+    matrix *result = creeMatrix(originalRows, originalColumns);
+
+    for (int i = 0; i < originalRows; i++) {
+        for (int j = 0; j < originalColumns; j++) {
+            result->coefs[i][j] = paddedResult->coefs[i][j];
+        }
+    }
+
+    return result;
+}
+
+matrix *strassenRecursive(matrix *A, matrix *B, int limite) {
+    if (A->rows <= limite || A->columns <= limite || B->rows <= limite || B->columns <= limite) {
         return naiveMultMat(A, B);
     }
 
     int size = A->rows;
     int halfSize = size / 2;
 
-    matrix *M1 = strassen(
-        subMatrixAddition(A, A, 0, 0, halfSize - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1),          // A11 + A22
-        subMatrixAddition(B, B, 0, 0, halfSize - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1), limite); // B11 + B22
+    matrix *M1 = strassenRecursive(
+        subMatrixAddition(A, A, 0, 0, halfSize - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1),          
+        subMatrixAddition(B, B, 0, 0, halfSize - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1), limite); 
 
-    matrix *M2 = strassen(
-        subMatrixAddition(A, A, halfSize, 0, size - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1), // A21 + A22
-        subMatrix(B, 0, 0, halfSize - 1, halfSize - 1), limite);                                              // B11
+    matrix *M2 = strassenRecursive(
+        subMatrixAddition(A, A, halfSize, 0, size - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1), 
+        subMatrix(B, 0, 0, halfSize - 1, halfSize - 1), limite);                                              
 
-    matrix *M3 = strassen(
-        subMatrix(A, 0, 0, halfSize - 1, halfSize - 1),                                                                   // A11
-        subMatrixSubtraction(B, B, 0, halfSize, halfSize - 1, size - 1, halfSize, halfSize, size - 1, size - 1), limite); // B12 - B22
+    matrix *M3 = strassenRecursive(
+        subMatrix(A, 0, 0, halfSize - 1, halfSize - 1),                                                                   
+        subMatrixSubtraction(B, B, 0, halfSize, halfSize - 1, size - 1, halfSize, halfSize, size - 1, size - 1), limite); 
 
-    matrix *M4 = strassen(
-        subMatrix(A, halfSize, halfSize, size - 1, size - 1),                                                       // A22
-        subMatrixSubtraction(B, B, halfSize, 0, size - 1, halfSize - 1, 0, 0, halfSize - 1, halfSize - 1), limite); // B21 - B11
+    matrix *M4 = strassenRecursive(
+        subMatrix(A, halfSize, halfSize, size - 1, size - 1),                                                       
+        subMatrixSubtraction(B, B, halfSize, 0, size - 1, halfSize - 1, 0, 0, halfSize - 1, halfSize - 1), limite); 
 
-    matrix *M5 = strassen(
-        subMatrixAddition(A, A, 0, 0, halfSize - 1, halfSize - 1, 0, halfSize, halfSize - 1, size - 1), // A11 + A12
-        subMatrix(B, halfSize, halfSize, size - 1, size - 1), limite);                                  // B22
+    matrix *M5 = strassenRecursive(
+        subMatrixAddition(A, A, 0, 0, halfSize - 1, halfSize - 1, 0, halfSize, halfSize - 1, size - 1), 
+        subMatrix(B, halfSize, halfSize, size - 1, size - 1), limite);                                  
 
-    matrix *M6 = strassen(
-        subMatrixSubtraction(A, A, halfSize, 0, size - 1, halfSize - 1, 0, 0, halfSize - 1, halfSize - 1),       // A21 - A11
-        subMatrixAddition(B, B, 0, 0, halfSize - 1, halfSize - 1, 0, halfSize, halfSize - 1, size - 1), limite); // B11 + B12
+    matrix *M6 = strassenRecursive(
+        subMatrixSubtraction(A, A, halfSize, 0, size - 1, halfSize - 1, 0, 0, halfSize - 1, halfSize - 1),       
+        subMatrixAddition(B, B, 0, 0, halfSize - 1, halfSize - 1, 0, halfSize, halfSize - 1, size - 1), limite); 
 
-    matrix *M7 = strassen(
-        subMatrixSubtraction(A, A, 0, halfSize, halfSize - 1, size - 1, halfSize, halfSize, size - 1, size - 1),       // A12 - A22
-        subMatrixAddition(B, B, halfSize, 0, size - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1), limite); // B21 + B22
+    matrix *M7 = strassenRecursive(
+        subMatrixSubtraction(A, A, 0, halfSize, halfSize - 1, size - 1, halfSize, halfSize, size - 1, size - 1),       
+        subMatrixAddition(B, B, halfSize, 0, size - 1, halfSize - 1, halfSize, halfSize, size - 1, size - 1), limite); 
 
     matrix *result = creeMatrix(size, size);
 
-    for (int i = 0; i < halfSize; i++)
-    {
-        for (int j = 0; j < halfSize; j++)
-        {
-            // C11 = M1 + M4 - M5 + M7
+    for (int i = 0; i < halfSize; i++) {
+        for (int j = 0; j < halfSize; j++) {
             result->coefs[i][j] = M1->coefs[i][j] + M4->coefs[i][j] - M5->coefs[i][j] + M7->coefs[i][j];
 
-            // C12 = M3 + M5
             result->coefs[i][j + halfSize] = M3->coefs[i][j] + M5->coefs[i][j];
 
-            // C21 = M2 + M4
             result->coefs[i + halfSize][j] = M2->coefs[i][j] + M4->coefs[i][j];
 
-            // C22 = M1 - M2 + M3 + M6
             result->coefs[i + halfSize][j + halfSize] = M1->coefs[i][j] - M2->coefs[i][j] + M3->coefs[i][j] + M6->coefs[i][j];
         }
     }
 
-    // Free intermediate matrices
     freeMatrix(*M1);
     freeMatrix(*M2);
     freeMatrix(*M3);
@@ -296,43 +330,55 @@ matrix *strassen(matrix *A, matrix *B, int limite)
     return result;
 }
 
+matrix *strassen(matrix *A, matrix *B, int limite) {
+    matrix *Aajuste = ajusteMatrix(A);
+    matrix *Bajuste = ajusteMatrix(B);
+
+    matrix *paddedResult = strassenRecursive(Aajuste, Bajuste, limite);
+
+    matrix *result = extractResult(paddedResult, A->rows, B->columns);
+
+    freeMatrix(*Aajuste);
+    freeMatrix(*Bajuste);
+    freeMatrix(*paddedResult);
+
+    return result;
+}
+
 int main(int argc, char const *argv[])
 {
 
-    
+    //int n = 3;
 
-    //int size = 64 * 2 * 2 * 2 * 2 * 2 * 2;
-    //matrix *A = creeMatrix(size, size);
-    //matrix *B = creeMatrix(size, size);
-//
-    //for (int i = 0; i < size; i++)
-    //{
-    //    for (int j = 0; j < size; j++)
-    //    {
-    //        A->coefs[i][j] = i + j + 1 + 100000000;
-    //        B->coefs[i][j] = (i + 1) * (j + 1) + 100000000;
-    //    }
-    //}
-//
-    //clock_t start_naive = clock();
-    //// matrix *result_naive = naiveMultMat(A, B);
-    //clock_t end_naive = clock();
-//
-    //double time_naive = (double)(end_naive - start_naive) / CLOCKS_PER_SEC;
-    //printf("Time naive : %f seconds\n", time_naive);
-//
-    //clock_t start_strassen = clock();
-    //matrix *result_strassen = strassen(A, B, 100);
-    //clock_t end_strassen = clock();
-//
-    //double time_strassen = (double)(end_strassen - start_strassen) / CLOCKS_PER_SEC;
-    //printf("Time Strassen : %f seconds\n", time_strassen);
-//
-    //// Libérez la mémoire
-    //freeMatrix(*A);
-    //freeMatrix(*B);
-    //// freeMatrix(*result_naive);
-    //freeMatrix(*result_strassen);
+    matrix *A = creeMatrix(3,2);
+    matrix *B=creeMatrix(2,3);
+
+    double a_values[3][2] = {{1, 3}, {2,4}, {5,4}};
+    double b_values[2][3] = {{5,1,3}, {2,3,2}};
+
+    for (int i = 0; i < A->rows; i++) {
+        for (int j = 0; j < A->columns; j++) {
+            A->coefs[i][j] = a_values[i][j];
+        }
+    }
+
+    for (int i = 0; i < B->rows; i++) {
+        for (int j = 0; j < B->columns; j++) {
+            B->coefs[i][j] = b_values[i][j];
+        }
+    }
+
+    printMatrix(*A);
+    printf("\n");
+    printMatrix(*B);
+    printf("\n");
+
+
+    matrix* C = strassen(A,B,1);
+    printf("\n");
+
+    printMatrix(*C);
+
 
     return 0;
 }
