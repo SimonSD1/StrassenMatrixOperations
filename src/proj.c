@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 
 typedef struct matrix
 {
@@ -40,6 +41,7 @@ matrix *creeMatrix(int rows, int columns)
     {
         m->coefs[i] = malloc(columns * sizeof(double));
     }
+
     return m;
 }
 
@@ -161,13 +163,14 @@ void identity(matrix *A)
     }
 }
 
-void copyMatrix(matrix *A, matrix *B)
+// copie source dsourcens destination
+void copyMatrix(matrix *source, matrix *destination)
 {
-    for (int i = 0; i < A->rows; i++)
+    for (int i = 0; i < source->rows; i++)
     {
-        for (int j = 0; j < A->columns; j++)
+        for (int j = 0; j < source->columns; j++)
         {
-            B->coefs[i][j] = A->coefs[i][j];
+            destination->coefs[i][j] = source->coefs[i][j];
         }
     }
 }
@@ -429,7 +432,7 @@ void createSubmatrix(matrix *A, matrix *result, int begin_row, int begin_col)
     {
         for (int j = 0; j < result->columns; j++)
         {
-            result->coefs[i][j] = A->coefs[i + begin_row][j + begin_row];
+            result->coefs[i][j] = A->coefs[i + begin_row][j + begin_col];
         }
     }
 }
@@ -459,6 +462,86 @@ void fillSubmatrix(matrix *A, matrix *B, int startRow, int startCol)
     }
 }
 
+
+void find_greatest_in_sub_matrix(matrix *A, int depart, int *facteur_ligne, int *facteur_colonne)
+{
+    int indice = 0;
+    double biggest = A->coefs[A->rows - 1][A->columns - 1];
+    *facteur_ligne = A->rows - 1;
+    *facteur_colonne = A->columns - 1;
+    for (int i = depart; i < A->rows; i++)
+    {
+        for (int j = depart; j < A->columns; j++)
+        {
+            if (A->coefs[i][j] > biggest)
+            {
+                biggest = A->coefs[i][j];
+                *facteur_ligne = i;
+                *facteur_colonne = j;
+            }
+        }
+    }
+}
+
+void PLUQ(matrix *A, matrix *P, matrix *L, matrix *U, matrix *Q)
+{
+    int size = A->rows;
+    // U = A
+    copyMatrix(A, U);
+
+    identity(L);
+    identity(P);
+    identity(Q);
+    // L = Id, P = Id, Q = Id
+
+    for (int i = 0; i < size - 1; i++)
+    {
+
+        int facteur_ligne;
+        int facteur_colonne;
+
+        find_greatest_in_sub_matrix(U, i, &facteur_ligne, &facteur_colonne);
+
+        P->coefs[i][i] = 0;
+        P->coefs[facteur_colonne][facteur_colonne] = 0;
+        P->coefs[facteur_colonne][i] = 1;
+        P->coefs[i][facteur_colonne] = 1;
+
+        Q->coefs[i][i] = 0;
+        Q->coefs[facteur_ligne][facteur_ligne] = 0;
+        Q->coefs[facteur_ligne][i] = 1;
+        Q->coefs[i][facteur_ligne] = 1;
+
+        for (int k = 0; k < size; k++)
+        {
+            // Échange ligne i et indice_ligne
+            double temp = U->coefs[i][k];
+            U->coefs[i][k] = U->coefs[facteur_ligne][k];
+            U->coefs[facteur_ligne][k] = temp;
+        }
+
+        for (int k = 0; k < size; k++)
+        {
+            // Échange colonne i et indice_ligne
+            double temp = U->coefs[k][facteur_colonne];
+            U->coefs[k][facteur_colonne] = U->coefs[k][i];
+            U->coefs[k][i] = temp;
+        }
+
+        for (int j = i + 1; j < size; j++)
+        {
+            double facteur = U->coefs[j][i] / U->coefs[i][i];
+            L->coefs[j][i] = facteur;
+            for (int a = 0; a < size; a++)
+            {
+                U->coefs[j][a] -= U->coefs[i][a] * facteur;
+            }
+        }
+    }
+}
+
+// si A11 non inversible on doit utiliser A22
+// https://www.researchgate.net/publication/3499047_A_Strassen-Newton_algorithm_for_high-speed_parallelizable_matrixinversion
 void strassen_inverse_recursive_naive(matrix *A, matrix *result)
 {
     if (A->columns == 1)
@@ -483,6 +566,15 @@ void strassen_inverse_recursive_naive(matrix *A, matrix *result)
     createSubmatrix(A, b, 0, col / 2);
     createSubmatrix(A, c, row / 2, 0);
     createSubmatrix(A, d, row / 2, col / 2);
+
+    printf("a=\n");
+    printMatrix(*a);
+    printf("b=\n");
+    printMatrix(*b);
+    printf("c=\n");
+    printMatrix(*c);
+    printf("d=\n");
+    printMatrix(*d);
 
     printf("e\n");
     matrix *e = creeMatrix(row / 2, col / 2);
@@ -556,7 +648,7 @@ void strassen_inverse_naive(matrix *A, matrix *result)
 
 int main(int argc, char const *argv[])
 {
-    int n = 2;
+    int n = 3;
 
     matrix *A = creeMatrix(n, n);
     matrix *B = creeMatrix(n, n);
@@ -567,7 +659,7 @@ int main(int argc, char const *argv[])
     {
         for (int j = 0; j < A->columns; j++)
         {
-            A->coefs[i][j] = (rand() % 10) + 1;
+            A->coefs[i][j] = i * A->rows + j + 1;
         }
     }
 
@@ -576,7 +668,7 @@ int main(int argc, char const *argv[])
         for (int j = 0; j < B->columns; j++)
         {
 
-            B->coefs[i][j] = (rand() % 10) + 1;
+            B->coefs[i][j] = i + j;
         }
     }
 
@@ -584,28 +676,57 @@ int main(int argc, char const *argv[])
     printMatrix(*A);
     printf("\n");
 
-    matrix *C = creeMatrix(n, n);
+    int facl;
+    int facc;
+
+    find_greatest_in_sub_matrix(A, 4, &facl, &facc);
+
+    printf("facl=%d facc=%d\n", facl, facc);
+
+    matrix *P = creeMatrix(n, n);
+    matrix *L = creeMatrix(n, n);
+    matrix *U = creeMatrix(n, n);
+    matrix *Q = creeMatrix(n, n);
+    matrix *R = creeMatrix(n, n);
+    matrix *R1 = creeMatrix(n, n);
+    matrix *R2 = creeMatrix(n, n);
     // createSubmatrix(A, C, 0, 5, 0, 5);
 
     clock_t start = clock();
-    strassen_inverse_recursive_naive(A, C);
+    PLUQ(A, P, L, U, Q);
     clock_t end = clock();
 
     printf("temps pris = %ld\n", end - start);
 
-    printf("C=\n");
-    printMatrix(*C);
+    printf("P=\n");
+    printMatrix(*P);
 
-    naiveMultMat(C, A, B);
+    printf("L=\n");
+    printMatrix(*L);
 
-    printf("B=\n");
-    printMatrix(*B);
+    printf("U=\n");
+    printMatrix(*U);
+
+    printf("Q=\n");
+    printMatrix(*Q);
 
     printf("\n");
 
+    naiveMultMat(P, L, R);
+    printMatrix(*R);
+    naiveMultMat(R, U, R1);
+    printMatrix(*R);
+    naiveMultMat(R1, Q, R2);
+
+    printf("resultat main\n");
+    printMatrix(*R2);
+
     freeMatrix(*A);
     freeMatrix(*B);
-    freeMatrix(*C);
+    freeMatrix(*P);
+    freeMatrix(*L);
+    freeMatrix(*U);
+    freeMatrix(*Q);
 
     return 0;
 }
