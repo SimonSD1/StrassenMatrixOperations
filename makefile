@@ -1,7 +1,7 @@
 CC = gcc
+CFLAGS = -O3
 
 SRCS = $(wildcard src/*.c)
-
 OBJS = $(SRCS:src/%.c=obj/%.o)
 
 TARGET = main
@@ -11,5 +11,6 @@ $(TARGET): $(OBJS)
 
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
 
 

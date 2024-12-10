@@ -3,6 +3,6 @@
 
 #include "../include/matrix.h"
 
-void inverse_LU(matrix *A, matrix *result);
+void inverse_PLUQ(matrix *A, matrix *result);
 
 #endif
