@@ -1,3 +1,5 @@
+// Simon Sepiol-Duchemin Joshua Setia
+
 #include <stdio.h>
 #include "../include/inverse.h"
 #include "../include/matrix.h"

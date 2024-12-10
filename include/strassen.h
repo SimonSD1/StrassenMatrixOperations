@@ -1,3 +1,5 @@
+// Simon Sepiol-Duchemin Joshua Setia
+
 #ifndef STRASSEN_H
 #define STRASSEN_H
 

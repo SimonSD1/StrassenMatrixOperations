@@ -1,3 +1,5 @@
+// Simon Sepiol-Duchemin Joshua Setia
+
 #ifndef DECOMPOSITION_H
 #define DECOMPOSITION_H
 

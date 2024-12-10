@@ -1,3 +1,5 @@
+// Simon Sepiol-Duchemin Joshua Setia
+
 #include <stdio.h>
 #include "../include/LU.h"
 #include "../include/matrix.h"

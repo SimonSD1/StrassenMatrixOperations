@@ -1,3 +1,5 @@
+## Simon Sepiol-Duchemin Joshua Setia
+
 CC = gcc
 CFLAGS = -O3
 

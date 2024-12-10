@@ -1,3 +1,5 @@
+// Simon Sepiol-Duchemin Joshua Setia
+
 #ifndef INVERSE_H
 #define INVERSE_H
 
