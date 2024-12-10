@@ -8,7 +8,7 @@
 
 int main(int argc, char const *argv[])
 {
-    int n = 5;
+    int n =4;
 
     matrix *A = creeMatrix(n, n);
     matrix *B = creeMatrix(n, n);
@@ -19,7 +19,11 @@ int main(int argc, char const *argv[])
     matrix *U = creeMatrix(n, n);
     matrix *Q = creeMatrix(n, n);
 
-    double M[16] = {0, 1, 1, 1, 1, 0, 1, 1, 2, 3, 0, 1, 1, 2, 0, 1};
+    double M[16] = {
+    0, 1, 3, 1,
+    0, 1, 1, 5,
+    2, 3, 4, 1, 
+    1, 2, 1, 1};
 
     srand(time(NULL));
 
@@ -27,7 +31,7 @@ int main(int argc, char const *argv[])
     {
         for (int j = 0; j < A->columns; j++)
         {
-            A->coefs[i][j] = rand()%10;
+            A->coefs[i][j] = M[i*A->rows+j];
         }
     }
 
@@ -35,28 +39,31 @@ int main(int argc, char const *argv[])
     {
         for (int j = 0; j < B->columns; j++)
         {
-            B->coefs[i][j] = rand()%10;
+            B->coefs[i][j] = rand() % 10;
         }
     }
 
+    printMatrix(*A);
+    printf("\ndet=%lf\n",determinant(A));
     clock_t start = clock();
-    naiveMultMat(A,B,P);
+    strassen_inverse_recursive_strassen(A, B);
     clock_t end = clock();
 
-    double naive = end-start;
+    double temps = end - start;
 
-    start=clock();
-    strassen(A,B,L,200);
-    end=clock();
+    start = clock();
+    // strassen_inverse_recursive_naive(A, B);
+    end = clock();
 
-    double stra = end-start;
+    double temps2 = end - start;
 
-    printf("\nnaive=%lf\n",naive);
+    printf("\temps=%lf , %lf\n", temps, temps2);
+
+    naiveMultMat(A, B, P);
+
     printMatrix(*P);
 
-
-    printf("\nstras=%lf\n",stra);
-    printMatrix(*L);
+    printf("valide = %d\n",testIdentity(P));
 
     return 0;
 }

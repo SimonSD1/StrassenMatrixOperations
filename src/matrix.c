@@ -149,6 +149,40 @@ void fillSubMatrix(matrix *original, matrix *result, int startRow, int startCol)
     }
 }
 
+int testIdentity(matrix *A)
+{
+    if (A->rows != A->columns)
+    {
+        return 0;
+    }
+
+    int size = A->rows;
+    double tolerance = 1e-6;
+
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            if (i == j)
+            {
+                if (fabs(A->coefs[i][j] - 1.0) > tolerance)
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                if (fabs(A->coefs[i][j]) > tolerance)
+                {
+                    return 0;
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
 void identity(matrix *A)
 {
     for (int i = 0; i < A->columns; i++)

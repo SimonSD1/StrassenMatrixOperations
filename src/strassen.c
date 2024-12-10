@@ -242,10 +242,10 @@ void strassen_inverse_recursive_naive(matrix *A, matrix *result)
     matrix *t = creeMatrix(size / 2, size / 2);
 
     int det_a = determinant(a);
-    int det_d = determinant(d);
+    //int det_d = determinant(d);
     // si a est inversible
 
-    if (fabs(det_a) > fabs(det_d))
+    if (fabs(det_a) > 0)
     {
 
         // e=a⁻1
@@ -353,33 +353,33 @@ void strassen_inverse_recursive_strassen(matrix *A, matrix *result)
     matrix *t = creeMatrix(size / 2, size / 2);
 
     int det_a = determinant(a);
-    int det_d = determinant(d);
+    //int det_d = determinant(d);
     // si a est inversible
 
-    if (fabs(det_a) > fabs(det_d))
+    if (fabs(det_a) > 0)
     {
 
         // e=a⁻1
         strassen_inverse_recursive_naive(a, e);
 
         // Z=d-ceb
-        strassen(e, b, temp,2);
-        strassen(c, temp, temp2,2);
+        strassen(e, b, temp,200);
+        strassen(c, temp, temp2,200);
         matrice_substract(d, temp2, Z);
 
         // t=Z⁻1
         strassen_inverse_recursive_naive(Z, t);
 
-        strassen(b, t, temp,2);
-        strassen(e, temp, temp2,2);
+        strassen(b, t, temp,200);
+        strassen(e, temp, temp2,200);
 
         copyMatrix(temp2, y);
 
         negativeMatrix(y);
 
-        strassen(c, e, temp3,2);
+        strassen(c, e, temp3,200);
 
-        strassen(t, temp3, z,2);
+        strassen(t, temp3, z,200);
         negativeMatrix(z);
 
         naiveMultMat(temp2, temp3, temp);
@@ -407,19 +407,19 @@ void strassen_inverse_recursive_strassen(matrix *A, matrix *result)
         strassen_inverse_recursive_naive(Z, t);
 
         // c*t
-        strassen(c, t, temp,2);
+        strassen(c, t, temp,200);
         // e*c*t
-        strassen(e, temp, z,2);
+        strassen(e, temp, z,200);
         // z=
         negativeMatrix(z);
 
-        strassen(b, e, temp,2);
-        strassen(t, temp, temp2,2);
+        strassen(b, e, temp,200);
+        strassen(t, temp, temp2,200);
         copyMatrix(temp2, y);
         negativeMatrix(y);
 
-        strassen(c, temp2, temp,2);
-        strassen(e, temp, temp2,2);
+        strassen(c, temp2, temp,200);
+        strassen(e, temp, temp2,200);
 
         matrice_add(e, temp2, x);
 

@@ -29,4 +29,5 @@ void fillBigMatrix(matrix *Big, matrix *small, int startRow, int startCol);
 void find_greatest_in_sub_matrix(matrix *A, int depart, int *facteur_ligne, int *facteur_colonne);
 double determinant(matrix *A);
 void transposeMatrix(matrix *A, matrix* result);
+int testIdentity(matrix*A);
 #endif
