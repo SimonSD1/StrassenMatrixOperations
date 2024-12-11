@@ -32,4 +32,8 @@ void find_greatest_in_sub_matrix(matrix *A, int depart, int *facteur_ligne, int 
 double determinant(matrix *A);
 void transposeMatrix(matrix *A, matrix* result);
 int testIdentity(matrix*A);
+void swapRows(matrix *M, int row1, int row2);
+void swapColumns(matrix *M, int row1, int row2);
+
+
 #endif

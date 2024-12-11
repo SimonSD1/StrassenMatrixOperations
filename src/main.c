@@ -6,11 +6,10 @@
 #include "../include/matrix.h"
 #include "../include/strassen.h"
 #include "../include/LU.h"
-#include "../include/inverse.h"
 
 int main(int argc, char const *argv[])
 {
-    int n =4;
+    int n =2*2*2*2*2*2*2*2;
 
     matrix *A = creeMatrix(n, n);
     matrix *B = creeMatrix(n, n);
@@ -33,7 +32,7 @@ int main(int argc, char const *argv[])
     {
         for (int j = 0; j < A->columns; j++)
         {
-            A->coefs[i][j] = M[i*A->rows+j];
+            A->coefs[i][j] = (float)rand()/((float)RAND_MAX/1);
         }
     }
 
@@ -45,16 +44,14 @@ int main(int argc, char const *argv[])
         }
     }
 
-    printMatrix(*A);
-    printf("\ndet=%lf\n",determinant(A));
     clock_t start = clock();
-    strassen_inverse_recursive_strassen(A, B);
+    strassen_inverse_recursive_strassen(A, B, 50);
     clock_t end = clock();
 
     double temps = end - start;
 
     start = clock();
-    // strassen_inverse_recursive_naive(A, B);
+    strassen_inverse_recursive_naive(A, B);
     end = clock();
 
     double temps2 = end - start;
@@ -62,8 +59,6 @@ int main(int argc, char const *argv[])
     printf("\temps=%lf , %lf\n", temps, temps2);
 
     naiveMultMat(A, B, P);
-
-    printMatrix(*P);
 
     printf("valide = %d\n",testIdentity(P));
 

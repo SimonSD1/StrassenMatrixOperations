@@ -20,6 +20,25 @@ matrix *creeMatrix(int rows, int columns)
     return m;
 }
 
+void swapRows(matrix *M, int row1, int row2)
+{
+    for (int i = 0; i < M->columns; i++)
+    {
+        double temp = M->coefs[row1][i];
+        M->coefs[row1][i] = M->coefs[row2][i];
+        M->coefs[row2][i] = temp;
+    }
+}
+
+void swapColumns(matrix *M, int col1, int col2)
+{
+    for (int i = 0; i < M->rows; i++)
+    {
+        double temp = M->coefs[i][col1];
+        M->coefs[i][col1] = M->coefs[i][col2];
+        M->coefs[i][col2] = temp;
+    }
+}
 void transposeMatrix(matrix *A, matrix *result)
 {
     int rows = A->rows;
