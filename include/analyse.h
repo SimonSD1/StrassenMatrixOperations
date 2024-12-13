@@ -13,6 +13,7 @@ double tpsMoy_MultStrassen(int nbTests, int taille);
 double tpsMoy_InversePLUQ(int nbTests, int taille);
 double tpsMoy_InverseStrassenNaive(int nbTests, int taille);
 double tpsMoy_InverseStrassenStrassen(int nbTests, int taille);
-void analyseMultNaive(double (*func)(int, int), int nbTests, int tailleMax);
+void analysePetitesTailles(double (*func)(int, int), int nbTests, int tailleMax);
+void analyseGrandesTailles(double (*func)(int, int), int nbTests, int tailleMax);
 
 #endif
