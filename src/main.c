@@ -6,10 +6,13 @@
 #include "../include/matrix.h"
 #include "../include/strassen.h"
 #include "../include/LU.h"
+#include "../include/analyse.h"
+
+
 
 int main(int argc, char const *argv[])
 {
-    int n =2*2*2*2*2*2*2*2;
+/*    int n =2*2*2*2*2*2*2*2;
 
     matrix *A = creeMatrix(n, n);
     matrix *B = creeMatrix(n, n);
@@ -56,11 +59,21 @@ int main(int argc, char const *argv[])
 
     double temps2 = end - start;
 
-    printf("\temps=%lf , %lf\n", temps, temps2);
+    printf("temps=%lf , %lf\n", temps, temps2);
 
     naiveMultMat(A, B, P);
 
-    printf("valide = %d\n",testIdentity(P));
+    printf("valide = %d\n",testIdentity(P));*/
+    printf("Multiplication naive, ");
+    analyseMultNaive(tpsMoy_MultNaive, 30, 11);
+    printf("\nMultiplication strassen, ");
+    analyseMultNaive(tpsMoy_MultStrassen, 30, 11);
 
+    printf("\n\nInversion PLUQ, ");
+    analyseMultNaive(tpsMoy_InversePLUQ, 30, 11);
+    printf("\nInversion strassen (avec multiplication naive), ");
+    analyseMultNaive(tpsMoy_InverseStrassenNaive, 30, 11);
+    printf("\nInversion strassen (avec multiplication strassen), ");
+    analyseMultNaive(tpsMoy_InverseStrassenStrassen, 30, 11);
     return 0;
 }

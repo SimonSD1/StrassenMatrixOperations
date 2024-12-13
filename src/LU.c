@@ -28,25 +28,7 @@ void LU(matrix *A, matrix *L, matrix *U)
     }
 }
 
-void findMaxElement(matrix *M, int start, int *maxRow, int *maxCol)
-{
-    double maxVal = 0.0;
-    *maxRow = start;
-    *maxCol = start;
 
-    for (int i = start; i < M->rows; i++)
-    {
-        for (int j = start; j < M->columns; j++)
-        {
-            if (fabs(M->coefs[i][j]) > maxVal)
-            {
-                maxVal = fabs(M->coefs[i][j]);
-                *maxRow = i;
-                *maxCol = j;
-            }
-        }
-    }
-}
 
 
 int PLUQ(matrix *A, matrix *P, matrix *L, matrix *U, matrix *Q)

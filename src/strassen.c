@@ -276,6 +276,20 @@ void strassen_inverse_recursive_naive(matrix *A, matrix *result)
     fillBigMatrix(result, y, 0, size / 2);
     fillBigMatrix(result, z, size / 2, 0);
     fillBigMatrix(result, t, size / 2, size / 2);
+
+    freeMatrix(*a);
+    freeMatrix(*b);
+    freeMatrix(*c);
+    freeMatrix(*d);
+    freeMatrix(*e);
+    freeMatrix(*Z);
+    freeMatrix(*temp);
+    freeMatrix(*temp2);
+    freeMatrix(*temp3);
+    freeMatrix(*x);
+    freeMatrix(*y);
+    freeMatrix(*z);
+    freeMatrix(*t);
 }
 
 void strassen_inverse_recursive_strassen(matrix *A, matrix *result, int limite)
@@ -342,6 +356,20 @@ void strassen_inverse_recursive_strassen(matrix *A, matrix *result, int limite)
     fillBigMatrix(result, y, 0, size / 2);
     fillBigMatrix(result, z, size / 2, 0);
     fillBigMatrix(result, t, size / 2, size / 2);
+
+    freeMatrix(*a);
+    freeMatrix(*b);
+    freeMatrix(*c);
+    freeMatrix(*d);
+    freeMatrix(*e);
+    freeMatrix(*Z);
+    freeMatrix(*temp);
+    freeMatrix(*temp2);
+    freeMatrix(*temp3);
+    freeMatrix(*x);
+    freeMatrix(*y);
+    freeMatrix(*z);
+    freeMatrix(*t);
 }
 
 void strassen_inverse_naive(matrix *A, matrix *result)

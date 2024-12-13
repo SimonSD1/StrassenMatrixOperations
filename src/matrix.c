@@ -105,6 +105,9 @@ void matrice_add(matrix *A, matrix *B, matrix *result)
     }
 }
 
+
+
+
 void subMatrixAddition(matrix *A, matrix *B, matrix *result, int startRowA, int startColA, int endRowA, int endColA, int startRowB, int startColB, int endRowB, int endColB)
 {
     int rowsA = endRowA - startRowA + 1;
@@ -294,7 +297,7 @@ void fillBigMatrix(matrix *Big, matrix *small, int startRow, int startCol)
     }
 }
 
-void find_greatest_in_sub_matrix(matrix *A, int depart, int *facteur_ligne, int *facteur_colonne)
+/*void find_greatest_in_sub_matrix(matrix *A, int depart, int *facteur_ligne, int *facteur_colonne)
 {
     int indice = 0;
     double biggest = A->coefs[A->rows - 1][A->columns - 1];
@@ -309,6 +312,26 @@ void find_greatest_in_sub_matrix(matrix *A, int depart, int *facteur_ligne, int 
                 biggest = fabs(A->coefs[i][j]);
                 *facteur_ligne = i;
                 *facteur_colonne = j;
+            }
+        }
+    }
+}*/
+
+void findMaxElement(matrix *M, int start, int *maxRow, int *maxCol)
+{
+    double maxVal = 0.0;
+    *maxRow = start;
+    *maxCol = start;
+
+    for (int i = start; i < M->rows; i++)
+    {
+        for (int j = start; j < M->columns; j++)
+        {
+            if (fabs(M->coefs[i][j]) > maxVal)
+            {
+                maxVal = fabs(M->coefs[i][j]);
+                *maxRow = i;
+                *maxCol = j;
             }
         }
     }
