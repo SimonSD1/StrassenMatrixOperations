@@ -64,16 +64,21 @@ int main(int argc, char const *argv[])
     naiveMultMat(A, B, P);
 
     printf("valide = %d\n",testIdentity(P));*/
-    printf("Multiplication naive, ");
-    analyseMultNaive(tpsMoy_MultNaive, 30, 11);
-    printf("\nMultiplication strassen, ");
-    analyseMultNaive(tpsMoy_MultStrassen, 30, 11);
+    printf("Multiplication naive petites tailles, ");
+    analysePetitesTailles(tpsMoy_MultNaive, 100, 64);
+    printf("\nMultiplication strassen petites tailles, ");
+    analysePetitesTailles(tpsMoy_MultStrassen, 100, 64);
+
+    printf("\n\nMultiplication naive grandes tailles, ");
+    analyseGrandesTailles(tpsMoy_MultNaive, 30, 11);
+    printf("\nMultiplication strassen grandes tailles, ");
+    analyseGrandesTailles(tpsMoy_MultStrassen, 30, 11);
 
     printf("\n\nInversion PLUQ, ");
-    analyseMultNaive(tpsMoy_InversePLUQ, 30, 11);
+    analyseGrandesTailles(tpsMoy_InversePLUQ, 30, 11);
     printf("\nInversion strassen (avec multiplication naive), ");
-    analyseMultNaive(tpsMoy_InverseStrassenNaive, 30, 11);
+    analyseGrandesTailles(tpsMoy_InverseStrassenNaive, 30, 11);
     printf("\nInversion strassen (avec multiplication strassen), ");
-    analyseMultNaive(tpsMoy_InverseStrassenStrassen, 30, 11);
+    analyseGrandesTailles(tpsMoy_InverseStrassenStrassen, 30, 11);
     return 0;
 }

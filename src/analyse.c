@@ -153,8 +153,18 @@ double tpsMoy_InverseStrassenStrassen(int nbTests, int taille)
 
 
 
+void analysePetitesTailles(double (*func)(int, int), int nbTests, int tailleMax)
+{
+    printf("temps moyen pour chaque taille :\n[");
+    for(int i=2; i <= tailleMax; i++)
+    {
+        printf("%lf, ", func(nbTests, i));
+    }
+    printf("]\n");
+}
 
-void analyseMultNaive(double (*func)(int, int), int nbTests, int tailleMax)
+
+void analyseGrandesTailles(double (*func)(int, int), int nbTests, int tailleMax)
 {
     printf("temps moyen pour chaque taille :\n[");
     for(int i=1; i < tailleMax; i++)
