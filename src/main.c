@@ -12,6 +12,8 @@
 
 int main(int argc, char const *argv[])
 {
+    srand(time(NULL));
+    
     //Tests temps d'exécution
     printf("Multiplication naive petites tailles, ");
     analysePetitesTailles(tpsMoy_MultNaive, 40, 64, 0);
